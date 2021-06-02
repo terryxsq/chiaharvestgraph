@@ -23,7 +23,8 @@
 
 #include "grapher.h"
 #include "colourmaps.h"
-
+#include "unistd.h"
+#include "limits.h"
 
 #define MAXLINESZ		1024
 
@@ -62,6 +63,7 @@ static int total_eligible_responses=0;
 static int plotcount=-1;
 static time_t oldeststamp;
 static float plotsSize=0.0f;
+static char hostname[HOST_NAME_MAX + 1];
 
 static void init_quarters( time_t now )
 {
@@ -484,7 +486,8 @@ static void place_stats_into_overlay(void)
 	(
 		overlay+0,
 		imw,
-		"PLOTS:%d SIZE:%.2fTB AVG-CHECK:%dms[%s]  SLOWEST-CHECK:%dms[%s]   ",
+		"HOST:%s PLOTS:%d SIZE:%.2fTB AVG-CHECK:%dms[%s]  SLOWEST-CHECK:%dms[%s]   ",
+		hostname,
 		plotcount,
 		plotsSize,
 		avgms, q_av,
@@ -548,7 +551,7 @@ static void enableRawMode()
 int main(int argc, char *argv[])
 {
 	const char* dirname = 0;
-
+	gethostname(hostname, HOST_NAME_MAX + 1);
 	if (argc != 2)
 	{
 		fprintf( stderr, "Usage: %s ~/.chia/mainnet/log\n", argv[0] );
