@@ -61,7 +61,7 @@ static double worst_response_time_eligible=0.0;
 static int total_eligible_responses=0;
 static int plotcount=-1;
 static time_t oldeststamp;
-
+static float plotsSize=0.0f;
 
 static void init_quarters( time_t now )
 {
@@ -196,15 +196,23 @@ static void analyze_line(const char* line, ssize_t length)
 		if ( !strncmp( line+24, "harvester ", 10 ) )
 		{
 			int year=-1;
+			int year2=-1;
 			int month=-1;	
+			int month2=-1;
 			int day=-1;
+			int day2=-1;
 			int hours=-1;
+			int hours2=-1;
 			int minut=-1;
+			int minut2=-1;
 			float secon=-1;
+			float secon2=-1;
 			int eligi = -1;
 			int proof = -1;
 			float durat = -1.0f;
 			int plots = -1;
+			int plots2 = -1;
+			float loadSeconds = 0.0f;
 			char key[128];
 			const int num = sscanf
 			(
@@ -222,6 +230,20 @@ static void analyze_line(const char* line, ssize_t length)
 				&proof,
 				&durat,
 				&plots
+			);
+			sscanf(
+				line,
+				"%04d-%02d-%02dT%02d:%02d:%f harvester chia.plotting.plot_tools: INFO "
+				"Loaded a total of %d plots of size %f TiB, in %f seconds",
+				&year2,
+				&month2,
+				&day2,
+				&hours2,
+				&minut2,
+				&secon2,
+				&plots2,
+				&plotsSize,
+				&loadSeconds
 			);
 			if ( num == 11 )
 			{
@@ -462,8 +484,9 @@ static void place_stats_into_overlay(void)
 	(
 		overlay+0,
 		imw,
-		"PLOTS:%d  AVG-CHECK:%dms[%s]  SLOWEST-CHECK:%dms[%s]   ",
+		"PLOTS:%d SIZE:%.2fTB AVG-CHECK:%dms[%s]  SLOWEST-CHECK:%dms[%s]   ",
 		plotcount,
+		plotsSize,
 		avgms, q_av,
 		worstms, q_wo
 	);
